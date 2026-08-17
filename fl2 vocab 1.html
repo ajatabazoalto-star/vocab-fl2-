@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flight 2: Simple Present & Existentials</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            color: #2d3748;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #1a365d;
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        p.subtitle {
+            color: #4a5568;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 650px;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background-color: #e2e8f0;
+            color: #4a5568;
+            border: 2px solid #cbd5e0;
+            padding: 8px 2px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .mode-btn.active {
+            background-color: #2b6cb0;
+            color: white;
+            border-color: #2b6cb0;
+        }
+
+        /* Vista de Estudio / Glosario */
+        .study-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            max-width: 650px;
+            width: 100%;
+        }
+
+        .study-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #3182ce;
+        }
+
+        .study-info h3 {
+            color: #2b6cb0;
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+        }
+
+        .study-info p.trans {
+            font-weight: bold;
+            color: #2d3748;
+            font-size: 0.95rem;
+        }
+
+        .study-info p.def {
+            color: #718096;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .listen-icon-btn {
+            background: #ebf8ff;
+            color: #3182ce;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        /* Vista de Práctica */
+        .game-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #2b6cb0;
+            margin-bottom: 15px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .audio-btn {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(49, 130, 206, 0.3);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+            min-height: 80px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+            color: #2d3748;
+        }
+
+        .card.correct {
+            border-color: #38a169;
+            background-color: #f0fff4;
+            color: #22543d;
+            animation: pulse 0.4s;
+        }
+
+        .card.wrong {
+            border-color: #e53e3e;
+            background-color: #fff5f5;
+            color: #742a2a;
+            animation: shake 0.4s;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            min-height: 30px;
+            text-align: center;
+        }
+
+        .feedback.correct-text { color: #276749; }
+        .feedback.wrong-text { color: #9b2c2c; }
+
+        .next-btn {
+            margin-top: 12px;
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 8px rgba(56, 161, 105, 0.3);
+        }
+
+        /* Pantalla Final */
+        .end-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 30px 20px;
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .end-screen h2 {
+            color: #2b6cb0;
+            margin-bottom: 10px;
+        }
+
+        .end-screen p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .restart-btn {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.3rem; }
+            .grid-container { grid-template-columns: 1fr; }
+            .card { min-height: 65px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Flight 2: Simple Present & Existentials</h1>
+        <p class="subtitle">Aeronautical English Program</p>
+    </header>
+
+    <div class="mode-selector">
+        <button class="mode-btn active" onclick="switchTab('study')">📘 Glosario</button>
+        <button class="mode-btn" onclick="switchTab('es')">1. Español</button>
+        <button class="mode-btn" onclick="switchTab('def')">2. Uso / Función</button>
+        <button class="mode-btn" onclick="switchTab('en')">3. Inglés</button>
+    </div>
+
+    <!-- SECCIÓN 0: GLOSARIO DE ESTUDIO -->
+    <div class="study-container" id="study-view"></div>
+
+    <!-- SECCIÓN DE JUEGO / PRÁCTICA -->
+    <div class="game-view" id="game-view" style="display: none;">
+        <div class="stats">
+            <span>Progreso: <span id="question-count">1</span>/<span id="total-count">0</span></span>
+            <span>Puntos: <span id="score">0</span></span>
+        </div>
+
+        <button class="audio-btn" onclick="playCurrentWord()">
+            🔊 Escuchar elemento
+        </button>
+
+        <div class="grid-container" id="grid"></div>
+
+        <div class="feedback" id="feedback"></div>
+        <button class="next-btn" id="next-btn" onclick="nextTurn()">Siguiente ➔</button>
+    </div>
+
+    <!-- PANTALLA FINAL -->
+    <div class="end-screen" id="end-screen">
+        <h2>🎉 ¡Vuelo 2 Completado!</h2>
+        <p>Has practicado el Presente Simple, Existenciales (There is / There are) y el vocabulario del PDF.<br>Tu puntuación final es: <strong id="final-score">0</strong> puntos.</p>
+        <button class="restart-btn" onclick="switchTab('es')">Repetir Modo Práctica ✈️</button>
+    </div>
+
+    <script>
+        const vocabulary = [
+            // Core Aviation Nouns (PDF Flight 2 & Rosetta 2)
+            { word: "Gate", translation: "Puerta de Abordaje", def: "Lugar de abordaje en la terminal." },
+            { word: "Seatbelt", translation: "Cinturón de Seguridad", def: "Dispositivo de seguridad del pasajero." },
+            { word: "Ramp", translation: "Rampa", def: "Área de estacionamiento y carga del avión." },
+            { word: "Headset", translation: "Auricular / Diadema", def: "Equipo de comunicación del piloto." },
+            { word: "Cargo Hold", translation: "Bodega de Carga", def: "Zona interna para equipaje masivo." },
+            
+            // New Aviation Verbs (PDF Flight 2)
+            { word: "Fasten", translation: "Abrochar", def: "Asegurar cinturones de seguridad." },
+            { word: "Park", translation: "Estacionar", def: "Ubicar el avión en el stand de rampa." },
+            { word: "Load", translation: "Cargar", def: "Introducir maletas en la bodega." },
+            { word: "Verify", translation: "Verificar", def: "Revisar datos o indicadores de cabina." },
+            { word: "Announce", translation: "Anunciar", def: "Dar un mensaje a bordo." },
+
+            // Existentials (PDF Flight 2 & Rosetta 2)
+            { word: "There is", translation: "Hay (Singular)", def: "Se usa para expresar la existencia de un solo objeto." },
+            { word: "There are", translation: "Hay (Plural)", def: "Se usa para expresar la existencia de múltiples objetos." },
+
+            // Additional Core Vocabulary (Rosetta 2 & PDF 2)
+            { word: "Pilot", translation: "Piloto", def: "Persona que opera la aeronave." },
+            { word: "Cockpit", translation: "Cabina de Mando", def: "Área del avión donde trabajan los pilotos." },
+            { word: "Flight Attendant", translation: "Tripulante de Cabina", def: "Encargado del anuncio de seguridad y atención." },
+            { word: "Mechanic", translation: "Mecánico", def: "Personal encardado del mantenimiento técnico." },
+            { word: "Dispatcher", translation: "Despachador", def: "Personal encargado del plan de vuelo y carga." },
+            { word: "Passenger", translation: "Pasajero", def: "Persona que viaja en la aeronave." },
+            { word: "Baggage", translation: "Equipaje / Maletas", def: "Maletas y pertenencias cargadas en bodega." },
+            { word: "Safety Protocol", translation: "Protocolo de Seguridad", def: "Instrucciones obligatorias antes de volar." }
+        ];
+
+        let currentTab = 'study';
+        let remainingWords = [];
+        let currentTarget = null;
+        let score = 0;
+        let currentIndex = 0;
+        let isAnswered = false;
+        let audioCtx = null;
+
+        function playBeep(type) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        function playSound(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function shuffle(array) {
+            return [...array].sort(() => 0.5 - Math.random());
+        }
+
+        function renderStudyView() {
+            const container = document.getElementById('study-view');
+            container.innerHTML = '';
+            vocabulary.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'study-card';
+                card.innerHTML = `
+                    <div class="study-info">
+                        <h3>${item.word}</h3>
+                        <p class="trans">${item.translation}</p>
+                        <p class="def">${item.def}</p>
+                    </div>
+                    <button class="listen-icon-btn" onclick="playSound('${item.word}')">🔊</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const buttons = document.querySelectorAll('.mode-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            if (tab === 'study') {
+                buttons[0].classList.add('active');
+                document.getElementById('study-view').style.display = 'grid';
+                document.getElementById('game-view').style.display = 'none';
+                document.getElementById('end-screen').style.display = 'none';
+            } else {
+                if (tab === 'es') buttons[1].classList.add('active');
+                if (tab === 'def') buttons[2].classList.add('active');
+                if (tab === 'en') buttons[3].classList.add('active');
+
+                document.getElementById('study-view').style.display = 'none';
+                document.getElementById('game-view').style.display = 'flex';
+                document.getElementById('end-screen').style.display = 'none';
+                resetGame();
+            }
+        }
+
+        function playCurrentWord() {
+            if (currentTarget) playSound(currentTarget.word);
+        }
+
+        function getCardText(item) {
+            if (currentTab === 'es') return item.translation;
+            if (currentTab === 'def') return item.def;
+            if (currentTab === 'en') return item.word;
+        }
+
+        function setupTurn() {
+            if (currentIndex >= remainingWords.length) {
+                showEndScreen();
+                return;
+            }
+
+            isAnswered = false;
+            document.getElementById('question-count').innerText = currentIndex + 1;
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('next-btn').style.display = 'none';
+
+            currentTarget = remainingWords[currentIndex];
+
+            const distractors = vocabulary.filter(v => v.word !== currentTarget.word);
+            const chosenDistractors = shuffle(distractors).slice(0, 3);
+            const options = shuffle([currentTarget, ...chosenDistractors]);
+
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            options.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerText = getCardText(item);
+                card.onclick = () => checkAnswer(item, card);
+                grid.appendChild(card);
+            });
+
+            setTimeout(playCurrentWord, 250);
+        }
+
+        function checkAnswer(selected, cardElement) {
+            if (isAnswered) return;
+
+            if (selected.word === currentTarget.word) {
+                isAnswered = true;
+                playBeep('correct');
+                score += 10;
+                document.getElementById('score').innerText = score;
+                cardElement.classList.add('correct');
+                
+                const feedback = document.getElementById('feedback');
+                feedback.innerText = `¡Excelente! ${currentTarget.word} = ${currentTarget.translation}`;
+                feedback.className = 'feedback correct-text';
+                
+                document.getElementById('next-btn').style.display = 'inline-block';
+            } else {
+                playBeep('wrong');
+                cardElement.classList.add('wrong');
+                const feedback = document.getElementById('feedback');
+                feedback.innerText = '¡Inténtalo de nuevo!';
+                feedback.className = 'feedback wrong-text';
+                
+                setTimeout(() => {
+                    cardElement.classList.remove('wrong');
+                }, 400);
+            }
+        }
+
+        function nextTurn() {
+            currentIndex++;
+            setupTurn();
+        }
+
+        function showEndScreen() {
+            document.getElementById('game-view').style.display = 'none';
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('end-screen').style.display = 'flex';
+        }
+
+        function resetGame() {
+            score = 0;
+            currentIndex = 0;
+            remainingWords = shuffle(vocabulary);
+            
+            document.getElementById('total-count').innerText = remainingWords.length;
+            document.getElementById('score').innerText = score;
+            
+            setupTurn();
+        }
+
+        window.onload = () => {
+            renderStudyView();
+        };
+    </script>
+</body>
+</html>
